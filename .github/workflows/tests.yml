@@ -16,39 +16,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
-      - name: Setup cache environment
-        id: extcache
-        uses: shivammathur/cache-extensions@v1
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: ${{ env.PHP_EXTENSIONS }}
-          key: ${{ env.CACHE_KEY }}
-
-      - name: Cache extensions
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.extcache.outputs.dir }}
-          key: ${{ steps.extcache.outputs.key }}
-          restore-keys: ${{ steps.extcache.outputs.key }}
-
-      - name: Setup PHP and Composer
-        uses: shivammathur/setup-php@2.31.1
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: ${{ env.PHP_EXTENSIONS }}
-          tools: composer:v2
-
-      - name: Get Composer cache dir
-        id: composer-cache-dir
-        run: echo dir=$(composer config cache-files-dir) >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v4.1.2
-        with:
-          key: composer-cache-${{ hashFiles('**/composer.lock') }}
-          path: ${{ steps.composer-cache-dir.outputs.dir }}
-          restore-keys: composer-cache-
-
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Install Dependencies
         run: composer install -q --no-interaction
