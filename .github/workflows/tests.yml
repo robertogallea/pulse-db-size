@@ -16,3 +16,12 @@ jobs:
         uses: ./.github/actions/setup
         with:
           php-version: '8.3'
+
+      - name: Run Test
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
+        run: |
+          composer prepare
+          vendor/bin/testbench vendor:publish --tag=pulse-migrations
+          composer test
