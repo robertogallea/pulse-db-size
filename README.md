@@ -2,7 +2,7 @@
 
 # Track database table size inside Pulse
 
-This package provides the very same information from [Laravel Pulse](https://pulse.laravel.com) as a JSON api endpoint.
+This package defines a Pulse Recorder and Card showing information about database table size. 
 
 ## Installation
 
