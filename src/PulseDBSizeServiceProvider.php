@@ -13,7 +13,8 @@ class PulseDBSizeServiceProvider extends ServiceProvider
         $this->loadViewsFrom($this->packagePath('resources/views'), 'pulseDBSize');
     }
 
-    public function boot()    {
+    public function boot()
+    {
         Livewire::component('pulse.dbsize', DBSizeCard::class);
     }
 
