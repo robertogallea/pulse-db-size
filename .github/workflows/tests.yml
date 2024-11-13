@@ -25,4 +25,4 @@ jobs:
           composer prepare
           rm vendor/orchestra/testbench-core/laravel/database/migrations/*.php
           vendor/bin/testbench vendor:publish --tag=pulse-migrations
-          composer test --compact --coverage --min=80
+          vendor/bin/pest --compact --coverage --min=80
