@@ -27,4 +27,5 @@ jobs:
           DB_DATABSAE: ":memory:"
         run: |
           composer prepare
+          vendor/bin/testbench vendor:publish --tag=pulse-migrations
           composer test
