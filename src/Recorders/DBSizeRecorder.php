@@ -33,10 +33,6 @@ class DBSizeRecorder
                 })
                 ->implode(',');
 
-            Log::info('SELECT table_name AS name, (data_length + index_length) AS size
-                    FROM information_schema.TABLES
-                    WHERE table_schema = "'.$this->config->get('database.connections.'.$connection.'.database').'"
-                    AND table_name NOT IN ('.$ignoredTables.')');
             $tableSizes = collect(match ($driver) {
                 'sqlite' => DB::select("SELECT SUM(pgsize) as size, name FROM 'dbstat' 
                                  WHERE name NOT IN ('.$ignoredTables.')
