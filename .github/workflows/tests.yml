@@ -18,9 +18,13 @@ jobs:
           tools: composer:v2
 
       - name: Install Dependencies
-        run: composer install
+        run: composer install -q --no-interaction
 
       - name: Run Test
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABSAE: ":memory:"
         run: |
+          composer init
           composer prepare
           composer test
