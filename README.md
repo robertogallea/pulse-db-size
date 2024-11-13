@@ -25,7 +25,7 @@ Add the provided recorder to your `config/pulse.php` configuration file as follo
         \Robertogallea\PulseDBSize\Recorders\DBSizeRecorder::class => [
             'enabled' => env('PULSE_DB_SIZE_RECORDER_ENABLED', true), // recorder switch
             'throttle' => env('PULSE_DB_SIZE_RECORDER_THROTTLE', 15), // throttling time before refreshing table size
-            'connection' => env('PULSE_DB_SIZE_RECORDER_CONNECTION', 'default'), // database connection to use
+            'connection' => env('PULSE_DB_SIZE_RECORDER_CONNECTION'), // database connection to use
             'ignore' => [
                 // list of tables to ignore
             ]
