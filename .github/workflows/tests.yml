@@ -7,8 +7,6 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
 
-    env:
-      CACHE_KEY: extensions-cache-v1
 
     steps:
       - name: Checkout code
