@@ -24,4 +24,4 @@ jobs:
         run: |
           composer prepare
           vendor/bin/testbench vendor:publish --tag=pulse-migrations
-          composer test
+          composer test --compact --coverage --min=80
