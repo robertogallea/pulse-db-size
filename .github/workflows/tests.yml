@@ -1,0 +1,24 @@
+name: Tests
+
+on:
+  pull_request
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup PHP and Composer
+        uses: shivammathur/setup-php@2.31.1
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
+      - name: Install Dependencies
+        run: composer install
+
+      - name: Run Test
+        run: vendor/bin/pest
