@@ -25,6 +25,5 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABSAE: ":memory:"
         run: |
-          composer init
           composer prepare
           composer test
