@@ -15,6 +15,7 @@ jobs:
         uses: shivammathur/setup-php@2.31.1
         with:
           php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, igbinary, msgpack, lzf, zstd, lz4, memcached, gmp, :php-psr
           tools: composer:v2
 
       - name: Install Dependencies
