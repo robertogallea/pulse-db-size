@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Setup PHP and Composer
         uses: shivammathur/setup-php@2.31.1
@@ -24,4 +26,9 @@ jobs:
         run: pint --test
 
       - name: Push Changes Back to the Repo
-        run: echo "TODO"
+        run: |
+          git config user.name "gh-actions"
+          git config user.email "gh@robertogallea.com"
+          git add .
+          git commit -m "Laravel Pint"
+          git push
