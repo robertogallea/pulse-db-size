@@ -36,6 +36,9 @@ class DBSizeRecorder
                    relname as name,
                    pg_relation_size(relid) As size
                    FROM pg_catalog.pg_statio_user_tables ORDER BY pg_total_relation_size(relid) DESC;'),
+                'oracle' => DB::select('select bytes "size", segment_name "name" from user_segments 
+                    where 
+                    segment_type = \'TABLE\''),
                 default => throw new InvalidArgumentException("Driver $driver is not supported.")
             })
                 ->mapWithKeys(function ($item) {
