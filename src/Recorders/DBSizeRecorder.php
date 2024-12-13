@@ -42,9 +42,9 @@ class DBSizeRecorder
 
             // "only" is prioritized because of like "least-selection" principle
             if (!empty($onlyTables)) {
-                $operator = 'IN'
+                $operator = 'IN';
             } else if (!empty($ignoredTables)) {
-                $operator = 'NOT IN'
+                $operator = 'NOT IN';
             }
     
             # If both are empty then operator is null and WHERE won't get added anyways
