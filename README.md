@@ -29,7 +29,7 @@ Add the provided recorder to your `config/pulse.php` configuration file as follo
             'only' => [
                 // prioritized if not empty
                 // only select these tables
-            ]
+            ],
             'ignore' => [
                 // list of tables to ignore
             ],
