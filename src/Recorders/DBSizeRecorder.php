@@ -31,7 +31,7 @@ class DBSizeRecorder
                     return "'$table'";
                 })
                 ->implode(',');
-            
+
             $onlyTables = collect($this->config->get('pulse.recorders.'.self::class.'.only', []))
                 ->map(function (string $table) {
                     return "'$table'";
@@ -41,14 +41,14 @@ class DBSizeRecorder
             $operator = null;
 
             // "only" is prioritized because of like "least-selection" principle
-            if (!empty($onlyTables)) {
+            if (! empty($onlyTables)) {
                 $operator = 'IN';
-            } else if (!empty($ignoredTables)) {
+            } elseif (! empty($ignoredTables)) {
                 $operator = 'NOT IN';
             }
-    
-            # If both are empty then operator is null and WHERE won't get added anyways
-            $tables = !empty($onlyTables) ? $onlyTables : $ignoredTables;
+
+            // If both are empty then operator is null and WHERE won't get added anyways
+            $tables = ! empty($onlyTables) ? $onlyTables : $ignoredTables;
 
             $tableSizes = collect(DB::select(match ($driver) {
                 'sqlite' => $this->getSqliteQuery($tables, $operator),
@@ -65,36 +65,36 @@ class DBSizeRecorder
         });
     }
 
-    public function getSqliteQuery(string $tables, string|null $operator): string
+    public function getSqliteQuery(string $tables, ?string $operator): string
     {
-        return "SELECT SUM(pgsize) as size, name FROM 'dbstat'" .
-                    (!$operator ? '' : 'WHERE name ' . $operator . ' (' . $tables . ') ') .
+        return "SELECT SUM(pgsize) as size, name FROM 'dbstat'".
+                    (! $operator ? '' : 'WHERE name '.$operator.' ('.$tables.') ').
                     'group by name;';
     }
 
-    public function getMySQLMariaDBQuery(mixed $connection, string $tables, string|null $operator): string
+    public function getMySQLMariaDBQuery(mixed $connection, string $tables, ?string $operator): string
     {
         return 'SELECT table_name AS name, (data_length + index_length) AS size
                     FROM information_schema.TABLES
-                    WHERE table_schema = "' . $this->config->get('database.connections.' . $connection . '.database') . '"'.
-                    (!$operator ? '' : ' AND table_name ' . $operator . ' (' . $tables . ')');
+                    WHERE table_schema = "'.$this->config->get('database.connections.'.$connection.'.database').'"'.
+                    (! $operator ? '' : ' AND table_name '.$operator.' ('.$tables.')');
     }
 
-    public function getPgSQLQuery(string $tables, string|null $operator): string
+    public function getPgSQLQuery(string $tables, ?string $operator): string
     {
         return 'SELECT
                    relname as name,
                    pg_relation_size(relid) As size
-                   FROM pg_catalog.pg_statio_user_tables' .
-                   (!$operator ? '' : 'WHERE relname ' . $operator . ' (' . $tables . ') ') .
+                   FROM pg_catalog.pg_statio_user_tables'.
+                   (! $operator ? '' : 'WHERE relname '.$operator.' ('.$tables.') ').
                    'ORDER BY pg_total_relation_size(relid) DESC';
     }
 
-    public function getOracleQuery(string $tables, string|null $operator): string
+    public function getOracleQuery(string $tables, ?string $operator): string
     {
         return 'SELECT bytes "size", segment_name "name" 
                     FROM user_segments 
                     WHERE segment_type = \'TABLE\' '.
-                    (!$operator ? '' : 'AND segment_name ' . $operator . ' (' . $tables . ')');
+                    (! $operator ? '' : 'AND segment_name '.$operator.' ('.$tables.')');
     }
 }
