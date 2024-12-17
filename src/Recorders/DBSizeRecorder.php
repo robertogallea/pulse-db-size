@@ -31,12 +31,30 @@ class DBSizeRecorder
                     return "'$table'";
                 })
                 ->implode(',');
+            
+            $onlyTables = collect($this->config->get('pulse.recorders.'.self::class.'.only', []))
+                ->map(function (string $table) {
+                    return "'$table'";
+                })
+                ->implode(',');
+
+            $operator = null;
+
+            // "only" is prioritized because of like "least-selection" principle
+            if (!empty($onlyTables)) {
+                $operator = 'IN';
+            } else if (!empty($ignoredTables)) {
+                $operator = 'NOT IN';
+            }
+    
+            # If both are empty then operator is null and WHERE won't get added anyways
+            $tables = !empty($onlyTables) ? $onlyTables : $ignoredTables;
 
             $tableSizes = collect(DB::select(match ($driver) {
-                'sqlite' => $this->getSqliteQuery($ignoredTables),
-                'mysql', 'mariadb' => $this->getMySQLMariaDBQuery($connection, $ignoredTables),
-                'pgsql' => $this->getPgSQLQuery($ignoredTables),
-                'oracle' => $this->getOracleQuery($ignoredTables),
+                'sqlite' => $this->getSqliteQuery($tables, $operator),
+                'mysql', 'mariadb' => $this->getMySQLMariaDBQuery($connection, $tables, $operator),
+                'pgsql' => $this->getPgSQLQuery($tables, $operator),
+                'oracle' => $this->getOracleQuery($tables, $operator),
                 default => throw new InvalidArgumentException("Driver $driver is not supported.")
             }))
                 ->mapWithKeys(function ($item) {
@@ -47,36 +65,36 @@ class DBSizeRecorder
         });
     }
 
-    public function getSqliteQuery(string $ignoredTables): string
+    public function getSqliteQuery(string $tables, string|null $operator): string
     {
-        return "SELECT SUM(pgsize) as size, name FROM 'dbstat'".
-                    (empty($ignoredTables) ? '' : 'WHERE name NOT IN ('.$ignoredTables.') ').
-                                 'group by name;';
+        return "SELECT SUM(pgsize) as size, name FROM 'dbstat'" .
+                    (!$operator ? '' : 'WHERE name ' . $operator . ' (' . $tables . ') ') .
+                    'group by name;';
     }
 
-    public function getMySQLMariaDBQuery(mixed $connection, string $ignoredTables): string
+    public function getMySQLMariaDBQuery(mixed $connection, string $tables, string|null $operator): string
     {
         return 'SELECT table_name AS name, (data_length + index_length) AS size
                     FROM information_schema.TABLES
-                    WHERE table_schema = "'.$this->config->get('database.connections.'.$connection.'.database').'"'.
-                    (empty($ignoredTables) ? '' : ' AND table_name NOT IN ('.$ignoredTables.')');
+                    WHERE table_schema = "' . $this->config->get('database.connections.' . $connection . '.database') . '"'.
+                    (!$operator ? '' : ' AND table_name ' . $operator . ' (' . $tables . ')');
     }
 
-    public function getPgSQLQuery(string $ignoredTables): string
+    public function getPgSQLQuery(string $tables, string|null $operator): string
     {
         return 'SELECT
                    relname as name,
                    pg_relation_size(relid) As size
-                   FROM pg_catalog.pg_statio_user_tables 
-                   WHERE '.(empty($ignoredTables) ? '' : 'relname NOT IN ('.$ignoredTables.') ').
+                   FROM pg_catalog.pg_statio_user_tables' .
+                   (!$operator ? '' : 'WHERE relname ' . $operator . ' (' . $tables . ') ') .
                    'ORDER BY pg_total_relation_size(relid) DESC';
     }
 
-    public function getOracleQuery(string $ignoredTables): string
+    public function getOracleQuery(string $tables, string|null $operator): string
     {
         return 'SELECT bytes "size", segment_name "name" 
                     FROM user_segments 
                     WHERE segment_type = \'TABLE\' '.
-                    (empty($ignoredTables) ? '' : 'AND segment_name NOT IN ('.$ignoredTables.')');
+                    (!$operator ? '' : 'AND segment_name ' . $operator . ' (' . $tables . ')');
     }
 }
