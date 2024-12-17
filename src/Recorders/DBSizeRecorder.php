@@ -68,7 +68,7 @@ class DBSizeRecorder
     public function getSqliteQuery(string $tables, ?string $operator): string
     {
         return "SELECT SUM(pgsize) as size, name FROM 'dbstat'".
-                    (! $operator ? '' : 'WHERE name '.$operator.' ('.$tables.') ').
+                    (! $operator ? '' : ' WHERE name '.$operator.' ('.$tables.') ').
                     'group by name;';
     }
 
@@ -86,7 +86,7 @@ class DBSizeRecorder
                    relname as name,
                    pg_relation_size(relid) As size
                    FROM pg_catalog.pg_statio_user_tables'.
-                   (! $operator ? '' : 'WHERE relname '.$operator.' ('.$tables.') ').
+                   (! $operator ? '' : ' WHERE relname '.$operator.' ('.$tables.') ').
                    'ORDER BY pg_total_relation_size(relid) DESC';
     }
 
