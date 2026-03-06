@@ -2,6 +2,10 @@
 
 All notable changes to `pulse-db-size` will be documented in this file
 
+## 1.0.3 - 2026-03-06
+
+- Fix livewire version requirements to match laravel pulse
+
 ## 1.0.2 - 2024-12-12
 
 - Fix query when ignored tables are missing
