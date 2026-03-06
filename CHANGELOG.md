@@ -2,7 +2,7 @@
 
 All notable changes to `pulse-db-size` will be documented in this file
 
-## 1.0.3 - 2026-03-06
+## 1.2.1 - 2026-03-06
 
 - Fix livewire version requirements to match laravel pulse
 
